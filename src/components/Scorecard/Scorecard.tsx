@@ -1,26 +1,26 @@
 import { useState } from "react";
-import Checkbox from "../common/Checkbox/Checkbox";
-import NumberInput from "../common/NumberInput/NumberInput";
-import arrow from "/arrow-right.svg";
-
 import {
   StyledBoldData,
   StyledData,
   StyledHead,
   StyledRow,
-  StyledSpan,
   StyledTable,
 } from "./scorecard.styles";
-import StepperButton from "../common/StepperButton/StepperButton";
 import Button from "../common/Button/Button.styles";
+import CheckboxRow from "../CheckboxRow/CheckboxRow";
+import InputRow from "../InputRow/InputRow";
+import ScoreRow from "../ScoreRow/ScoreRow";
 
 function Scorecard() {
+  // Constants for Scores
   const FULL_HOUSE_VALUE = 25;
   const SM_STRAIGHT_VALUE = 30;
   const LG_STRAIGHT_VALUE = 40;
   const WHOOPZEE_VALUE = 50;
   const WHOOPZEE_BONUS = 100;
+  const UPPER_BONUS_VALUE = 35;
 
+  // States for upper section
   const [aces, setAces] = useState<number>(0);
   const [twos, setTwos] = useState<number>(0);
   const [threes, setThrees] = useState<number>(0);
@@ -28,6 +28,26 @@ function Scorecard() {
   const [fives, setFives] = useState<number>(0);
   const [sixes, setSixes] = useState<number>(0);
 
+  // States for Lower Section of Scorecard
+  const [threeOfAKind, setThreeOfAKind] = useState<number>(0);
+  const [fourOfAKind, setFourOfAKind] = useState<number>(0);
+  const [fullHouse, setFullHouse] = useState<boolean>(false);
+  const [smStraight, setSmStraight] = useState<boolean>(false);
+  const [lgStraight, setLgStraight] = useState<boolean>(false);
+  const [whoopzee, setWhoopzee] = useState<boolean>(false);
+  const [chance, setChance] = useState<number>(0);
+  const [whoopzeeBonus, setWhoopzeeBonus] = useState<number>(0);
+
+  // Booleans States for Checkbox rows
+  const [lockedFullHouse, setLockedFullHouse] = useState<boolean>(false);
+  const [lockedSmStraight, setLockedSmStraight] = useState<boolean>(false);
+  const [lockedLgStraight, setLockedLgStraight] = useState<boolean>(false);
+  const [lockedWhoopzee, setLockedWhoopzee] = useState<boolean>(false);
+
+  /**
+   * @desc Sums all of the solo value boxes in the upper section
+   * @returns Sum of the solos in upper section
+   */
   const sumSolos = (): number => {
     let sum = 0;
     sum += aces >= 0 ? aces : 0;
@@ -39,23 +59,18 @@ function Scorecard() {
     return sum;
   };
 
-  const bonus = sumSolos() >= 63 ? 35 : 0;
-  const [threeOfAKind, setThreeOfAKind] = useState<number>(0);
-  const [fourOfAKind, setFourOfAKind] = useState<number>(0);
-  const [fullHouse, setFullHouse] = useState<boolean>(false);
-  const [smStraight, setSmStraight] = useState<boolean>(false);
-  const [lgStraight, setLgStraight] = useState<boolean>(false);
-  const [whoopzee, setWhoopzee] = useState<boolean>(false);
-  const [chance, setChance] = useState<number>(0);
-  const [whoopzeeBonus, setWhoopzeeBonus] = useState<number>(0);
+  // Score for if Bonus in Upper Section applies
+  const bonus = sumSolos() >= 63 ? UPPER_BONUS_VALUE : 0;
 
-  const [lockedFullHouse, setLockedFullHouse] = useState<boolean>(false);
-  const [lockedSmStraight, setLockedSmStraight] = useState<boolean>(false);
-  const [lockedLgStraight, setLockedLgStraight] = useState<boolean>(false);
-  const [lockedWhoopzee, setLockedWhoopzee] = useState<boolean>(false);
-
+  /**
+   * @desc Sum upper section of scorecard and include bonus
+   * @returns Sum of upper section
+   */
   const sumUpper = (): number => sumSolos() + bonus;
-
+  /**
+   * @desc Tally all of the bottom sections scores, excluding negative numbers
+   * @returns Sum of bottom section
+   */
   const sumBottom = (): number => {
     let sum: number = 0;
     if (threeOfAKind > 0) {
@@ -109,148 +124,60 @@ function Scorecard() {
         </StyledHead>
 
         <tbody>
-          <StyledRow locked={aces !== 0}>
-            <StyledBoldData>Aces</StyledBoldData>
-            <StyledData>Count and add only Aces</StyledData>
-            <StyledData>
-              <NumberInput state={aces} setState={setAces} step={1} />
-              <StepperButton
-                state={aces}
-                setState={setAces}
-                step={1}
-                dir={"up"}
-              />
-              <StepperButton
-                state={aces}
-                setState={setAces}
-                step={1}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={twos !== 0}>
-            <StyledBoldData>Twos</StyledBoldData>
-            <StyledData>Count and add only Twos</StyledData>
-            <StyledData>
-              <NumberInput state={twos} setState={setTwos} step={2} />
-              <StepperButton
-                state={twos}
-                setState={setTwos}
-                step={2}
-                dir={"up"}
-              />
-              <StepperButton
-                state={twos}
-                setState={setTwos}
-                step={2}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={threes !== 0}>
-            <StyledBoldData>Threes</StyledBoldData>
-            <StyledData>Count and add only Threes</StyledData>
-            <StyledData>
-              <NumberInput state={threes} setState={setThrees} step={3} />
-              <StepperButton
-                state={threes}
-                setState={setThrees}
-                step={3}
-                dir={"up"}
-              />
-              <StepperButton
-                state={threes}
-                setState={setThrees}
-                step={3}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={fours !== 0}>
-            <StyledBoldData>Fours</StyledBoldData>
-            <StyledData>Count and add only Fours</StyledData>
-            <StyledData>
-              <NumberInput state={fours} setState={setFours} step={4} />
-              <StepperButton
-                state={fours}
-                setState={setFours}
-                step={4}
-                dir={"up"}
-              />
-              <StepperButton
-                state={fours}
-                setState={setFours}
-                step={4}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={fives !== 0}>
-            <StyledBoldData>Fives</StyledBoldData>
-            <StyledData>Count and add only Fives</StyledData>
-            <StyledData>
-              <NumberInput state={fives} setState={setFives} step={5} />
-              <StepperButton
-                state={fives}
-                setState={setFives}
-                step={5}
-                dir={"up"}
-              />
-              <StepperButton
-                state={fives}
-                setState={setFives}
-                step={5}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={sixes !== 0}>
-            <StyledBoldData>Sixes</StyledBoldData>
-            <StyledData>Count and add only Sixes</StyledData>
-            <StyledData>
-              <NumberInput state={sixes} setState={setSixes} step={6} />
-              <StepperButton
-                state={sixes}
-                setState={setSixes}
-                step={6}
-                dir={"up"}
-              />
-              <StepperButton
-                state={sixes}
-                setState={setSixes}
-                step={6}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={false}>
-            <StyledBoldData>Total Score</StyledBoldData>
-            <StyledData>
-              <img src={arrow} />
-            </StyledData>
-            <StyledBoldData>{sumSolos()}</StyledBoldData>
-          </StyledRow>
-          <StyledRow locked={false}>
-            <StyledBoldData>
-              BONUS{" "}
-              <StyledSpan>
-                <br />
-                (if score 63 or higher)
-              </StyledSpan>
-            </StyledBoldData>
-            <StyledData>Score 35</StyledData>
-            <StyledBoldData>{bonus}</StyledBoldData>
-          </StyledRow>
-          <StyledRow locked={false}>
-            <StyledBoldData>
-              Total&nbsp;
-              <StyledSpan>(Upper)</StyledSpan>
-            </StyledBoldData>
-            <StyledData>
-              <img src={arrow} />
-            </StyledData>
-            <StyledBoldData>{sumSolos() + bonus}</StyledBoldData>
-          </StyledRow>
+          <InputRow
+            state={aces}
+            setState={setAces}
+            title={"Aces"}
+            details="Count and add only Aces"
+            step={1}
+          />
+          <InputRow
+            state={twos}
+            setState={setTwos}
+            title={"Twos"}
+            details="Count and add only Twos"
+            step={2}
+          />
+          <InputRow
+            state={threes}
+            setState={setThrees}
+            title={"Threes"}
+            details="Count and add only Threes"
+            step={3}
+          />
+          <InputRow
+            state={fours}
+            setState={setFours}
+            title={"Fours"}
+            details="Count and add only Fours"
+            step={4}
+          />
+          <InputRow
+            state={fives}
+            setState={setFives}
+            title={"Fives"}
+            details="Count and add only Fives"
+            step={5}
+          />
+          <InputRow
+            state={sixes}
+            setState={setSixes}
+            title={"Sixes"}
+            details="Count and add only Sixes"
+            step={6}
+          />
+          <ScoreRow
+            text={['Total Score']}
+            score={sumSolos()}
+          />
+          <ScoreRow
+            text={['BONUS', '(if score 63 or higher)', 'Score 35']}
+            score={bonus}
+          />
+          <ScoreRow
+            text={['Total', '(Upper)']}
+            score={sumSolos() + bonus}
+          />
         </tbody>
       </StyledTable>
       <StyledTable>
@@ -260,173 +187,82 @@ function Scorecard() {
           <StyledBoldData>Game</StyledBoldData>
         </StyledHead>
         <tbody>
-          <StyledRow locked={threeOfAKind !== 0}>
-            <StyledBoldData>3 of a kind</StyledBoldData>
-            <StyledData>Add total of all dice</StyledData>
-            <StyledData>
-              <NumberInput
-                state={threeOfAKind}
-                setState={setThreeOfAKind}
-                step={1}
-              />
-              <StepperButton
-                state={threeOfAKind}
-                setState={setThreeOfAKind}
-                step={1}
-                dir={"up"}
-              />
-              <StepperButton
-                state={threeOfAKind}
-                setState={setThreeOfAKind}
-                step={1}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={fourOfAKind !== 0}>
-            <StyledBoldData>4 of a kind</StyledBoldData>
-            <StyledData>Add total of all dice</StyledData>
-            <StyledData>
-              <NumberInput
-                state={fourOfAKind}
-                setState={setFourOfAKind}
-                step={1}
-              />
-              <StepperButton
-                state={fourOfAKind}
-                setState={setFourOfAKind}
-                step={1}
-                dir={"up"}
-              />
-              <StepperButton
-                state={fourOfAKind}
-                setState={setFourOfAKind}
-                step={1}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow
+          <InputRow
+            state={threeOfAKind}
+            setState={setThreeOfAKind}
+            title={"3 of a kind"}
+            details={"Add total of all dice"}
+            step={1}
+          />
+          <InputRow
+            state={fourOfAKind}
+            setState={setFourOfAKind}
+            title={"4 of a kind"}
+            details={"Add total of all dice"}
+            step={1}
+          />
+          <CheckboxRow
             locked={fullHouse || lockedFullHouse}
-            onClick={() => setLockedFullHouse(!lockedFullHouse)}
-          >
-            <StyledBoldData>Full House</StyledBoldData>
-            <StyledData>Score 25</StyledData>
-            <StyledData>
-              <Checkbox state={fullHouse} setState={setFullHouse} />
-            </StyledData>
-          </StyledRow>
-          <StyledRow
+            state={fullHouse}
+            setState={setFullHouse}
+            title={"Full House"}
+            details={"Score 25"}
+            lockedState={lockedFullHouse}
+            setLockedAlt={setLockedFullHouse}
+          />
+          <CheckboxRow
             locked={smStraight || lockedSmStraight}
-            onClick={() => setLockedSmStraight(!lockedSmStraight)}
-          >
-            <StyledBoldData>
-              Sm. Straight{" "}
-              <StyledSpan>
-                <br />
-                (Sequence of 4)
-              </StyledSpan>
-            </StyledBoldData>
-            <StyledData>Score 30</StyledData>
-            <StyledData>
-              <Checkbox state={smStraight} setState={setSmStraight} />
-            </StyledData>
-          </StyledRow>
-          <StyledRow
+            state={smStraight}
+            setState={setSmStraight}
+            title={"Sm. Straight"}
+            details={"Score 30"}
+            lockedState={lockedSmStraight}
+            setLockedAlt={setLockedSmStraight}
+          />
+          <CheckboxRow
             locked={lgStraight || lockedLgStraight}
-            onClick={() => setLockedLgStraight(!lockedLgStraight)}
-          >
-            <StyledBoldData>
-              Large Straight{" "}
-              <StyledSpan>
-                <br />
-                (Sequence of 5)
-              </StyledSpan>
-            </StyledBoldData>
-            <StyledData>Score 40</StyledData>
-            <StyledData>
-              <Checkbox state={lgStraight} setState={setLgStraight} />
-            </StyledData>
-          </StyledRow>
-          <StyledRow
+            state={lgStraight}
+            setState={setLgStraight}
+            title={"Lg. Straight"}
+            details={"Score 40"}
+            lockedState={lockedLgStraight}
+            setLockedAlt={setLockedLgStraight}
+          />
+          <CheckboxRow
             locked={whoopzee || lockedWhoopzee}
-            onClick={() => setLockedWhoopzee(!lockedWhoopzee)}
-          >
-            <StyledBoldData>WHOOPZEE</StyledBoldData>
-            <StyledData>Score 50</StyledData>
-            <StyledData>
-              <Checkbox state={whoopzee} setState={setWhoopzee} />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={chance !== 0}>
-            <StyledBoldData>Chance</StyledBoldData>
-            <StyledData>Add total of all dice</StyledData>
-            <StyledData>
-              <NumberInput state={chance} setState={setChance} step={1} />
-              <StepperButton
-                state={chance}
-                setState={setChance}
-                step={1}
-                dir={"up"}
-              />
-              <StepperButton
-                state={chance}
-                setState={setChance}
-                step={1}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={false}>
-            <StyledBoldData>Whoopzee Bonus</StyledBoldData>
-            <StyledData>1 for each bonus</StyledData>
-            <StyledData>
-              <NumberInput
-                state={whoopzeeBonus}
-                setState={setWhoopzeeBonus}
-                step={1}
-              />
-              <StepperButton
-                state={whoopzeeBonus}
-                setState={setWhoopzeeBonus}
-                step={1}
-                dir={"up"}
-              />
-              <StepperButton
-                state={whoopzeeBonus}
-                setState={setWhoopzeeBonus}
-                step={1}
-                dir={"down"}
-              />
-            </StyledData>
-          </StyledRow>
-          <StyledRow locked={false}>
-            <StyledBoldData>
-              Total&nbsp;
-              <StyledSpan>(Lower)</StyledSpan>
-            </StyledBoldData>
-            <StyledData>
-              <img src={arrow} />
-            </StyledData>
-            <StyledBoldData>{sumBottom()}</StyledBoldData>
-          </StyledRow>
-          <StyledRow locked={false}>
-            <StyledBoldData>
-              Total&nbsp;
-              <StyledSpan>(Upper)</StyledSpan>
-            </StyledBoldData>
-            <StyledData>
-              <img src={arrow} />
-            </StyledData>
-            <StyledBoldData>{sumUpper()}</StyledBoldData>
-          </StyledRow>
-          <StyledRow locked={false}>
-            <StyledBoldData>Grand Total</StyledBoldData>
-            <StyledData>
-              <img src={arrow} />
-            </StyledData>
-            <StyledBoldData>{sumTotal()}</StyledBoldData>
-          </StyledRow>
+            state={whoopzee}
+            setState={setWhoopzee}
+            title={"Whoopzee"}
+            details={"Score 50"}
+            lockedState={lockedWhoopzee}
+            setLockedAlt={setLockedWhoopzee}
+          />
+          <InputRow
+            state={chance}
+            setState={setChance}
+            step={1}
+            title={"Chance"}
+            details={"Add total of all dice"}
+          />
+          <InputRow
+            state={whoopzeeBonus}
+            setState={setWhoopzeeBonus}
+            step={1}
+            title={"Whoopzee Bonus"}
+            details={"1 for each bonus"}
+          />
+          <ScoreRow
+            text={['Total', '(Lower)']}
+            score={sumBottom()}
+          />
+          <ScoreRow
+            text={['Total', '(Upper)']}
+            score={sumUpper()}
+          />
+          <ScoreRow
+            text={['Grand Total']}
+            score={sumTotal()}
+          />
           <StyledRow locked={false}>
             <StyledData colSpan={3} style={{ justifyContent: "center" }}>
               <Button onClick={newGame}>New Game</Button>
